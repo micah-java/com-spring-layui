@@ -96,6 +96,7 @@
                 <li class="layui-this user_tab_title" lay-id="1">表格</li>
                 <li class="user_tab_title" lay-id="2">面板</li>
                 <li class="user_tab_title" lay-id="3">表单</li>
+                <li class="user_tab_title" lay-id="4">弹出层</li>
             </ul>
             <!--layui-tab-content:代表tab的内容-->
             <div class="layui-tab-content">
@@ -104,8 +105,65 @@
                     layui-show:启用显示
                 -->
                 <div class="layui-tab-item layui-show">
-                    <!-- 内容主体区域 -->
+                    <!-- 搜索条件开始 -->
+                    <fieldset class="layui-elem-field layui-field-title">
+                        <legend>查询条件</legend>
+                    </fieldset>
+                    <form action="" class="layui-form" method="post">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">姓名</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" type="text" name="name" placeholder="请输入姓名"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">开始时间</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" readonly type="text" id="startTime" name="startTime"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">结束时间</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" readonly type="text" id="endTime" name="endTime"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">地址</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" type="text" name="age" placeholder="请输入地址"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-filter="user_table_condition">查询</button>
+                                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 搜索条件结束 -->
+                    <!-- 数据表格开始 -->
                     <table class="layui-hide" id="user_table" lay-filter="user_table"></table>
+                    <!--自定义toolBar-->
+                    <div style="display: none;" id="user_tool_bar">
+                        <!--按钮组-->
+                        <div class="layui-btn-group">
+                            <!--可以加layui-btn-sm属性控制按钮的大小-->
+                            <button type="button" class="layui-btn" lay-event="create">创建</button>
+                            <button type="button" class="layui-btn" lay-event="batch_delete">批量删除</button>
+                            <button type="button" class="layui-btn" lay-event="selected">获取选中数据</button>
+                            <button type="button" class="layui-btn" lay-event="reload">刷新</button>
+                        </div>
+                    </div>
+                    <!--自定义lineToolBar-->
+                    <div style="display: none;" id="user_line_tool_bar">
+                        <!--可以加layui-btn-xs属性控制按钮的大小-->
+                        <button type="button" class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</button>
+                    </div>
+                    <!-- 数据表格结束 -->
                 </div>
                 <div class="layui-tab-item">
                     <!--
@@ -154,21 +212,22 @@
                         </div>
                     </div>
                 </div>
+                <!--表单区域-->
                 <div class="layui-tab-item">
                     <!--表单区域-->
-                    <form class="layui-form" action="">
+                    <form class="layui-form" lay-filter="user_form" action="">
                         <!--单行输入框-->
                         <div class="layui-form-item">
                             <label class="layui-form-label">用户名</label>
                             <div class="layui-input-block">
                                 <!--lay-verify:做验证的-->
-                                <input type="text" name="name" lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input"/>
+                                <input type="text" name="name" lay-verify="required|name_validate" placeholder="请输入用户名" autocomplete="off" class="layui-input"/>
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">密码</label>
                             <div class="layui-input-block">
-                                <input type="password" name="password" lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input"/>
+                                <input type="password" name="password" lay-verify="required|password_validate" placeholder="请输入密码" autocomplete="off" class="layui-input"/>
                             </div>
                         </div>
                         <!--多行输入框-->
@@ -188,6 +247,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">验证身份证</label>
                                 <div class="layui-input-inline">
+                                    <!--lay-verify:identity,身份证校验-->
                                     <input type="text" name="identity" lay-verify="identity" placeholder="" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
@@ -204,13 +264,11 @@
                             <label class="layui-form-label">兴趣爱好</label>
                             <div class="layui-input-block">
                                 <!--lay-search:联想过滤的功能-->
-                                <select name="interest" lay-filter="interest" lay-search="">
+                                <select id="interest" name="interest" lay-filter="interest" lay-search="">
                                     <option value=""></option>
                                     <option value="0">写作</option>
                                     <option value="1" selected="">阅读</option>
                                     <option value="2">游戏</option>
-                                    <option value="3">音乐</option>
-                                    <option value="4">旅行</option>
                                 </select>
                             </div>
                         </div>
@@ -219,7 +277,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">国家</label>
                                 <div class="layui-input-inline">
-                                    <select name="interest" lay-filter="interest">
+                                    <select name="country" lay-filter="country">
                                         <option value=""></option>
                                         <option value="0">美国</option>
                                         <option value="1" selected="">中国</option>
@@ -244,23 +302,24 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">单选框</label>
                             <div class="layui-input-block">
-                                <input type="radio" name="flag" value="1" title="是" checked="">
-                                <input type="radio" name="flag" value="0" title="否">
+                                <input type="radio" name="flag" lay-filter="flag" value="1" title="是" checked="">
+                                <input type="radio" name="flag" lay-filter="flag" value="0" title="否">
                             </div>
                         </div>
                         <!--复选框-->
                         <div class="layui-form-item">
                             <label class="layui-form-label">复选框</label>
                             <div class="layui-input-block">
-                                <input type="checkbox" name="like[write]" title="写作">
-                                <input type="checkbox" name="like[read]" title="阅读" checked="">
-                                <input type="checkbox" name="like[game]" title="游戏">
+                                <input type="checkbox" lay-filter="like" name="like[write]" value="写作" title="写作">
+                                <input type="checkbox" lay-filter="like" name="like[read]" value="阅读" title="阅读" checked="">
+                                <input type="checkbox" lay-filter="like" name="like[game]" value="游戏" title="游戏">
                             </div>
                         </div>
                         <!--原始复选框-->
                         <div class="layui-form-item" pane="">
                             <label class="layui-form-label">原始复选框</label>
                             <div class="layui-input-block">
+                                <!--lay-skin:switch(开关风格),primary(原始风格)-->
                                 <input type="checkbox" name="write" lay-skin="primary" title="写作" checked="">
                                 <input type="checkbox" name="read" lay-skin="primary" title="阅读">
                                 <input type="checkbox" name="game" lay-skin="primary" title="游戏" disabled="">
@@ -268,17 +327,19 @@
                         </div>
                         <!--开关-默认关-->
                         <div class="layui-form-item">
-                            <label class="layui-form-label">开关-默认关</label>
-                            <div class="layui-input-block">
-                                <input type="checkbox" name="close" lay-skin="switch" lay-filter="switch_close" lay-text="ON|OFF">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">开关-默认关</label>
+                                <div class="layui-input-inline">
+                                    <input type="checkbox" name="close" lay-skin="switch" lay-filter="switch_close" lay-text="ON|OFF">
+                                </div>
                             </div>
-                        </div>
-                        <!--开关-默认开-->
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">开关-默认开</label>
-                            <div class="layui-input-block">
-                                <input type="checkbox" name="open" lay-skin="switch" lay-filter="switch_open" lay-text="ON|OFF" checked="">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">开关-默认开</label>
+                                <div class="layui-input-inline">
+                                    <input type="checkbox" name="open" lay-skin="switch" lay-filter="switch_open" lay-text="ON|OFF" checked="">
+                                </div>
                             </div>
+
                         </div>
                         <!--普通文本域-->
                         <div class="layui-form-item layui-form-text">
@@ -287,21 +348,26 @@
                                 <textarea placeholder="请输入内容" class="layui-textarea"></textarea>
                             </div>
                         </div>
-                        <!--富文本编辑器-->
-                        <div class="layui-form-item layui-form-text">
-                            <label class="layui-form-label">富文本</label>
-                            <div class="layui-input-block">
-                                <textarea class="layui-textarea layui-hide" name="content" lay-verify="content" id="LAY_editor"></textarea>
-                            </div>
-                        </div>
                         <!--提交-->
                         <div class="layui-form-item">
                             <div class="layui-input-block">
                                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="user_table_submit">立即提交</button>
                                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="render_select">渲染</button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="form_init">表单初始化</button>
                             </div>
                         </div>
                     </form>
+                </div>
+                <!--弹出层-->
+                <div class="layui-tab-item">
+                    <button class="layui-btn" id="btn_alert">alert</button>
+                    <button class="layui-btn layui-btn-danger" id="btn_confirm">confirm</button>
+                    <button class="layui-btn layui-btn-warm" id="btn_prompt">prompt</button>
+                    <button class="layui-btn layui-btn-normal" id="btn_photo">photo</button>
+                    <button class="layui-btn layui-btn-normal" id="open_type_1">open.type.1</button>
+                    <button class="layui-btn layui-btn-normal" id="open_type_2">open.type.2</button>
+                    <button class="layui-btn layui-btn-normal" id="open_type_3">open.type.3</button>
                 </div>
             </div>
         </div>
@@ -318,46 +384,55 @@
     </div>
 </div>
 
-<form class="layui-form" action="" id="createPopups" style="display: none;">
-    <div class="layui-form-item">
-        <label class="layui-form-label layui-icon layui-icon-username">
-            姓名
-        </label>
-        <div class="layui-input-block">
-            <input class="layui-input" type="text" name="name" placeholder="请输入姓名"/>
+<!-- 弹出层开始 -->
+<div id="createPopups" style="display: none;">
+    <form class="layui-form" action="" lay-filter="create_popups_form" id="create_popups_form">
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-username">姓名</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="name" placeholder="请输入姓名"/>
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label layui-icon layui-icon-face-smile-fine">年龄</label>
-        <div class="layui-input-block">
-            <input class="layui-input" type="text" name="age" placeholder="请输入年龄"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-face-smile-fine">年龄</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="age" placeholder="请输入年龄"/>
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">富文本</label>
-        <div class="layui-input-block">
-            <textarea id="content_edit" class="layui-textarea" style="display: none;" lay-verify="content_edit" ></textarea>
+        <div class="layui-form-item" style="text-align: center">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="create_table_submit">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
         </div>
-    </div>
-</form>
-<!--自定义toolBar-->
-<div style="display: none;" id="user_tool_bar">
-    <!--按钮组-->
-    <div class="layui-btn-group">
-        <!--可以加layui-btn-sm属性控制按钮的大小-->
-        <button type="button" class="layui-btn" lay-event="add">创建</button>
-        <button type="button" class="layui-btn" lay-event="batch_delete">批量删除</button>
-        <button type="button" class="layui-btn" lay-event="selected">获取选中数据</button>
-        <button type="button" class="layui-btn" lay-event="reload">刷新</button>
-    </div>
+    </form>
 </div>
+<div id="editPopups" style="display: none;">
+    <form class="layui-form" action="" lay-filter="edit_popups_form" id="edit_popups_form">
 
-<!--自定义lineToolBar-->
-<div style="display: none;" id="user_line_tool_bar">
-    <!--可以加layui-btn-xs属性控制按钮的大小-->
-    <button type="button" class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>
-    <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</button>
+        <input type="hidden" name="id" value=""/>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-username">姓名</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="name" placeholder="请输入姓名"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-face-smile-fine">年龄</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="age" placeholder="请输入年龄"/>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="edit_table_submit">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
 </div>
+<!-- 弹出层结束 -->
 
 <script th:src="@{/layui/layui.js}"></script>
 <script>
@@ -413,7 +488,7 @@
             elem: '#user_table'//渲染的目标对象
             , id: 'user_table'//设定容器唯一id,从layui 2.2.0开始，从<table id="test"></table>中的id参数中获取。
             , height: 420
-            , url: '/layer/query' //数据接口
+            , url: '/query' //数据接口
             , title: '用户表'//数据导出来的标题
             , page: true //开启分页
             , toolbar: '#user_tool_bar' //开启工具栏，默认default
@@ -428,11 +503,11 @@
             , cols: [
                 [ //表头
                     {type: 'checkbox', fixed: 'left'},
-                    {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left', totalRowText: '合计：'},
-                    {field: 'name', title: '用户名', width: 120, edit: true},
-                    {field: 'age', title: '年龄', width: 90, sort: true, totalRow: true},
+                    {field: 'id', title: 'ID', sort: true, fixed: 'left', align: "center", totalRowText: '合计：'},
+                    {field: 'name', title: '用户名', edit: true, align: "center"},
+                    {field: 'age', title: '年龄', sort: true, align: "center", totalRow: true},
                     {
-                        field: 'sex', title: '性别', width: 90, templet: function (data) {
+                        field: 'sex', title: '性别', align: "center",templet: function (data) {
                             //data:指的是该行的数据
                             if (data.sex == 1) {
                                 return "<span>男</span>";
@@ -443,10 +518,10 @@
                             }
                         }
                     },
-                    {field: 'address', title: '地址', width: 90},
-                    {field: 'interest', title: '兴趣', width: 90},
-                    {field: 'content', title: '内容', width: 90},
-                    {title: '操作', fixed: 'right', toolbar: "#user_line_tool_bar", width: 120, align: "center"}
+                    {field: 'address', title: '地址', align: "center"},
+                    {field: 'interest', title: '兴趣', align: "center"},
+                    {field: 'content', title: '内容'},
+                    {title: '操作', fixed: 'right', toolbar: "#user_line_tool_bar", align: "center"}
                 ]
             ]
         });
@@ -454,62 +529,8 @@
         //监听table头工具栏事件
         table.on('toolbar(user_table)', function (obj) {
             switch (obj.event) {
-                case 'add':
-                    layer.open({
-                        /*
-                         * 如果content取的的事当前页面元素内容时，type类型应该为1
-                         * 如果content取的的路径，或者某个页面，type类型应该为2
-                         */
-                        type: 1,
-                        title: '添加资产',
-                        shadeClose: false,
-                        shade: 0.01,
-                        maxmin: true,
-                        area: ['500px', '500px'],
-                        fix: false,
-                        content: '<div id="content"></div>',
-                        btn: ['确认', '取消'],
-                        success: function (layero, index) {
-                            $(layero).find("#content").empty();
-                            var form = $("#createPopups").html();
-                            $(layero).find("#content").append(form);
-                        },
-                        yes: function (index, layero) {
-                            //按钮一的回调
-                            debugger;
-                            var name = $(layero).find("input[name='name']").val(),
-                                age = $(layero).find("input[name='age']").val();
-                            var obj = {
-                                "name": name,
-                                "age": age
-                            };
-                            var data = JSON.stringify(obj);
-                            $.ajax({
-                                url: "/layer/create",
-                                type: "POST",
-                                data: data,
-                                dataType: "json",
-                                contentType: "application/json;charset=utf-8",
-                                traditional: true,
-                                success: function () {
-                                    layer.close(index);
-                                    table.reload('user_table_reload', {
-                                        url: '/layer/query',
-                                        page: {curr: 1},
-                                        where: {
-                                            name: ""
-                                        }
-                                    }, 'data')
-                                },
-                                error: function () {
-
-                                }
-                            });
-                        }
-                    });
-                    layedit.build('content_edit', {
-                        height: 180
-                    }); //建立编辑器
+                case 'create':
+                    userCreatePopups();
                     break;
                 case 'batch_delete':
                     if (data.length === 0) {
@@ -529,12 +550,60 @@
                     //tableIns.reload();
                     //注意，user_table取得是table容器的索引，即table实例中id
                     table.reload('user_table', {
-                        url: '/layer/query'
+                        url: '/query'
                         ,where: {} //设定异步数据接口的额外参数
                         //,height: 300
                     });
                     break;
             }
+        });
+
+        var userPopupsIndex;
+        function userCreatePopups(){
+            userPopupsIndex = layer.open({
+                type: 1,
+                title: '添加数据',
+                shadeClose: false,
+                shade: 0.01,
+                maxmin: true,
+                area: '500px',
+                fix: false,
+                content: $("#createPopups"),
+                success:function(layero,index){
+                    //清空表单数据
+                    $("#create_popups_form")[0].reset();
+                }
+            });
+        }
+
+        //保存数据
+        form.on('submit(create_table_submit)',function () {
+            //序列化表单数据
+            var params = $("#create_popups_form").serializeArray();
+            var array = {};
+            $.map(params,function (item,index) {
+                debugger;
+                array[item['name']] = item['value'];
+            });
+            var data = JSON.stringify(array);
+            $.ajax({
+                url: "/create",
+                type: "POST",
+                data: data,
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    layer.close(userPopupsIndex);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                },
+                error: function (data) {}
+            });
         });
 
         //监听checkbox事件
@@ -558,16 +627,82 @@
             var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
 
             if(layEvent === 'edit'){ //编辑
-                layer.alert("edit");
+                editUser(data);//传数据
             } else if(layEvent === 'delete'){ //删除
                 layer.confirm('真的删除行么', function(index){
-                    layer.alert("delete");
+                    deleteUser(data,index);//传数据
                 });
             }
         });
 
-        //创建一个编辑器
-        var editIndex = layedit.build('LAY_editor');
+        function editUser(data){
+            userPopupsIndex = layer.open({
+                type: 1,
+                title: '添加数据',
+                shadeClose: false,
+                shade: 0.01,
+                maxmin: true,
+                area: '500px',
+                fix: false,
+                content: $("#editPopups"),
+                success:function (layero, index) {
+                    //给表单赋值
+                    form.val("edit_popups_form",data);
+                }
+            });
+        }
+
+        //更新数据
+        form.on('submit(edit_table_submit)',function () {
+            //序列化表单数据
+            var params = $("#edit_popups_form").serializeArray();
+            var array = {};
+            $.map(params,function (item,index) {
+                debugger;
+                array[item['name']] = item['value'];
+            });
+            var data = JSON.stringify(array);
+            $.ajax({
+                url: "/edit",
+                type: "POST",
+                data: data,
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    layer.close(userPopupsIndex);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                },
+                error: function (data) {}
+            });
+        });
+
+        //删除数据
+        function deleteUser(data,index){
+            $.ajax({
+                url: "/del/" + data.id,
+                type: "PUT",
+                data: {},
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    layer.close(index);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                },
+                error: function (data) {}
+            });
+        }
 
         //监听表单事件
         //监听提交
@@ -575,6 +710,135 @@
             layer.msg(JSON.stringify(data.field));
             //注意，这里可以使用异步提交ajax
             return false;//阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //监听下拉框
+        form.on('select(interest)', function(data){
+            console.log(data.elem); //得到select原始DOM对象
+            console.log(data.value); //得到被选中的值
+            console.log(data.othis); //得到美化后的DOM对象
+        });
+
+        //监听复选框
+        form.on('checkbox(like)', function(data){
+            console.log(data.elem); //得到checkbox原始DOM对象
+            console.log(data.elem.checked); //是否被选中，true或者false
+            console.log(data.value); //复选框value值，也可以通过data.elem.value得到
+            console.log(data.othis); //得到美化后的DOM对象
+        });
+
+        //监听开关事件
+        form.on('switch(switch_close)', function(data){
+            console.log(data.elem); //得到checkbox原始DOM对象
+            console.log(data.elem.checked); //开关是否开启，true或者false
+            console.log(data.value); //开关value值，也可以通过data.elem.value得到
+            console.log(data.othis); //得到美化后的DOM对象
+        });
+
+        //监听单选框事件
+        form.on('radio(flag)', function(data){
+            console.log(data.elem); //得到radio原始DOM对象
+            console.log(data.value); //被点击的radio的value值
+        });
+
+        //渲染，向select中添加一个元素
+        $("#render_select").on("click",function () {
+            $("#interest").append("<option value='3'>旅行</option>");
+            //需要渲染才可生效
+            form.render('select'); //刷新所有select选择框渲染
+        });
+
+        //表单初始化
+        $("#form_init").on("click",function () {
+            //给表单赋值
+            form.val("user_form",{
+                name:"123",
+                email:"1214235@qq.com",
+                flag:"0",
+                like:['like[game]']
+            });
+        });
+
+        //表单自定义校验
+        form.verify({
+            name_validate: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                    return '用户名不能有特殊字符';
+                }
+                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                    return '用户名首尾不能出现下划线\'_\'';
+                }
+                if(/^\d+\d+\d$/.test(value)){
+                    return '用户名不能全为数字';
+                }
+            }
+
+            //我们既支持上述函数式的方式，也支持下述数组的形式
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            ,password_validate: [
+                /^[\S]{6,12}$/
+                ,'密码必须6到12位，且不能出现空格'
+            ]
+        });
+
+        $("#btn_alert").on("click",function () {
+            layer.alert('加了个图标', {icon: 1}); //这时如果你也还想执行yes回调，可以放在第三个参数中。
+            /*layer.alert('有了回调',{icon: 1}, function(index){
+                //弹出层只能通过索引关闭
+                layer.close(index);
+            });*/
+        });
+
+        $("#btn_confirm").on("click",function () {
+            //可以加第二个参数:图标,也可以不加
+            layer.confirm('btn confirm?',{icon: 3, title:'提示'}, function(index){
+                layer.close(index);
+            });
+        });
+
+        $("#btn_prompt").on("click",function () {
+            layer.prompt(function(value, index, elem){
+                alert(value); //得到value
+                layer.close(index);
+            });
+        });
+        //这里有问题，渲染不出来
+        $("#btn_photo").on("click",function () {
+            $.get('/resource', function(json){
+                layer.photos({
+                    photos: json
+                    ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                });
+            });
+        });
+
+        //页面层
+        $("#open_type_1").on("click",function () {
+            layer.open({
+                type: 1,//默认type:0,类似alert,1:页面层
+                content: $("#createPopups") //不仅可以传入普通的html内容，还可以指定DOM
+                ,area:"450px"
+                ,btn:["确定","取消"]
+            });
+        });
+
+        //iframe层
+        $("#open_type_2").on("click",function () {
+            layer.open({
+                type: 2,//默认type:0,类似alert,2:iframe层
+                //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                content: 'http://sentsin.com'
+                ,area:"450px"
+                ,btn:["确定","取消"]
+            });
+        });
+
+        //绑定时间选择器
+        laydate.render({
+            elem:"#startTime"
+        });
+        laydate.render({
+            elem:"#endTime"
         });
     });
 </script>

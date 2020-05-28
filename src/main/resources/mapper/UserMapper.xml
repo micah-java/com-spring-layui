@@ -4,7 +4,7 @@
     <select id="findUserById" parameterType="int" resultType="com.spring.layer.entity.User">
 		 SELECT * FROM User WHERE id = #{id}
 	</select>
-    <update id="updateUser" parameterType="com.spring.layer.entity.User">
+    <update id="edit" parameterType="com.spring.layer.entity.User">
         update user set name=#{name},age=#{age} where id=#{id}
     </update>
     <insert id="create" parameterType="com.spring.layer.entity.User">

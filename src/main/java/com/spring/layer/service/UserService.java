@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
 
     public User findUserById(Integer id);
-    public User updateUser(User user);
+    public int edit(User user);
     public int create(User user);
     public int deleteUserById(Integer id);
     public List<User> query(User user);

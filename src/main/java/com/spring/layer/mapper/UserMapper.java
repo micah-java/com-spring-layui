@@ -10,7 +10,7 @@ public interface UserMapper {
 
     User findUserById(Integer id);
 
-    int updateUser(User user);
+    int edit(User user);
 
     int create(User user);
 
