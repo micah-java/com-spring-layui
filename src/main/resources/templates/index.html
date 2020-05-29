@@ -353,7 +353,7 @@
                             <div class="layui-input-block">
                                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="user_table_submit">立即提交</button>
                                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-                                <button type="button" class="layui-btn layui-btn-warm" id="render_select">渲染</button>
+                                <button type="button" class="layui-btn layui-btn-warm" id="render_select">动态添加下拉</button>
                                 <button type="button" class="layui-btn layui-btn-warm" id="form_init">表单初始化</button>
                             </div>
                         </div>
@@ -367,7 +367,6 @@
                     <button class="layui-btn layui-btn-normal" id="btn_photo">photo</button>
                     <button class="layui-btn layui-btn-normal" id="open_type_1">open.type.1</button>
                     <button class="layui-btn layui-btn-normal" id="open_type_2">open.type.2</button>
-                    <button class="layui-btn layui-btn-normal" id="open_type_3">open.type.3</button>
                 </div>
             </div>
         </div>
@@ -604,6 +603,7 @@
                 },
                 error: function (data) {}
             });
+            return false;
         });
 
         //监听checkbox事件
@@ -680,6 +680,8 @@
                 },
                 error: function (data) {}
             });
+            //阻止表单跳转，如果需要表单跳转，去掉这段即可。
+            return false;
         });
 
         //删除数据
@@ -709,7 +711,7 @@
         form.on('submit(user_table_submit)', function(data){
             layer.msg(JSON.stringify(data.field));
             //注意，这里可以使用异步提交ajax
-            return false;//阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            return false;
         });
 
         //监听下拉框
@@ -804,7 +806,7 @@
         });
         //这里有问题，渲染不出来
         $("#btn_photo").on("click",function () {
-            $.get('/resource', function(json){
+            $.get('/json/image.json', function(json){
                 layer.photos({
                     photos: json
                     ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
