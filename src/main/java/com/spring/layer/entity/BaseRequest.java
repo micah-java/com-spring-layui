@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class BaseRequest implements Serializable {
 
-    private Integer limit;
+    private Integer limit = 10;
 
-    private Integer page;
+    private Integer page = 1;
 
     private Integer start;
 

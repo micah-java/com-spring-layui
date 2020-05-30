@@ -118,19 +118,19 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">姓名</label>
                                 <div class="layui-input-inline">
-                                    <input class="layui-input" type="text" name="name" placeholder="请输入姓名"/>
+                                    <input class="layui-input" type="text" id="name" name="name" placeholder="请输入姓名"/>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">地址</label>
                                 <div class="layui-input-inline">
-                                    <input class="layui-input" type="text" name="address" placeholder="请输入地址"/>
+                                    <input class="layui-input" type="text" id="address" name="address" placeholder="请输入地址"/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-submit="" type="submit" lay-filter="user_table_query" id="user_table_query">查询</button>
+                                <button class="layui-btn" lay-submit="" type="submit" lay-filter="user_table_query">查询</button>
                                 <button class="layui-btn layui-btn-primary" type="reset">重置</button>
                             </div>
                         </div>
@@ -472,11 +472,7 @@
             , height: "full"
             , cellMinWidth: 100  //设置列默认的最小宽度
             , limit: 10
-            , done: function (res, curr, count) {//数据渲染完的回调,可以借此做一些其它的操作
-                debugger;
-                $("#page").val(curr);
-                $("#limit").val(tableIns.config.limit);
-            }
+            , done: function (res, curr, count) {}//数据渲染完的回调,可以借此做一些其它的操作
             , totalRow: true //开启合计行
             , cols: [
                 [ //表头
@@ -794,28 +790,13 @@
             elem:"#endTime"
         });
 
-        $("#user_table_query123").on("click",function () {
-            var page = tableIns.config.page.curr;//获取当前页码
-            var limit = tableIns.config.page.limit;
-            //序列化表单数据
-            var params = $("#user_table_form").serializeArray();
-            var array = {};
-            $.map(params,function (item,index) {
-                array[item['name']] = item['value'];
-            });
-            array.page = page,array.limit = limit;
-            var data = JSON.stringify(array);
-            $.ajax({
-                url: "/query",
-                type: "POST",
-                data: data,
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                traditional: true,
-                success: function (data) {
-                    //待处理TODO
-                },
-                error: function (data) {}
+        form.on('submit(user_table_query)',function () {
+            table.reload('user_table', {
+                url: '/query',
+                where: {
+                    name: $("#name").val()
+                    ,address: $("#address").val()
+                }
             });
             //阻止表单跳转，如果需要表单跳转，去掉这段即可。
             return false;
