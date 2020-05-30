@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" >
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>接口管理平台</title>
+    <title>项目管理平台</title>
     <link th:href="@{/layui/css/layui.css}" rel="stylesheet"/>
 </head>
 <body class="layui-layout-body">
@@ -127,8 +127,19 @@
                                     <input class="layui-input" type="text" id="address" name="address" placeholder="请输入地址"/>
                                 </div>
                             </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">性别</label>
+                                <div class="layui-input-inline">
+                                    <select name="sex" lay-filter="sex" id="sex">
+                                        <option value=""></option>
+                                        <option value="0">保密</option>
+                                        <option value="1">男</option>
+                                        <option value="2">女</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="layui-form-item">
+                        <div class="layui-form-item" style="text-align: center;">
                             <div class="layui-input-block">
                                 <button class="layui-btn" lay-submit="" type="submit" lay-filter="user_table_query">查询</button>
                                 <button class="layui-btn layui-btn-primary" type="reset">重置</button>
@@ -376,7 +387,6 @@
         </div>
     </div>
 
-
     <div class="layui-footer">
         <!-- 底部固定区域 -->
         © layui.com - 底部固定区域
@@ -398,7 +408,18 @@
                 <input class="layui-input" lay-verify="required" type="text" name="age" placeholder="请输入年龄"/>
             </div>
         </div>
-        <div class="layui-form-item" style="text-align: center">
+        <div class="layui-form-item">
+            <label class="layui-form-label">性別</label>
+            <div class="layui-input-block">
+                <select name="sex" lay-filter="sex">
+                    <option value=""></option>
+                    <option value="0">保密</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-top: 50px;">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="create_table_submit">提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -423,7 +444,18 @@
                 <input class="layui-input" lay-verify="required" type="text" name="age" placeholder="请输入年龄"/>
             </div>
         </div>
-        <div class="layui-form-item" style="text-align: center">
+        <div class="layui-form-item">
+            <label class="layui-form-label">性別</label>
+            <div class="layui-input-block">
+                <select name="sex" lay-filter="sex">
+                    <option value=""></option>
+                    <option value="0">保密</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-top: 50px;">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="edit_table_submit">提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -510,7 +542,7 @@
                     break;
                 case 'batch_delete':
                     if (data.length === 0) {
-                        layer.msg('请选择一行');
+                        layer.msg('请最少选择一行');
                     } else {
                         layer.confirm('真的删除行么', function(index){
                             batchDeleteUser(data,index);
@@ -796,6 +828,7 @@
                 where: {
                     name: $("#name").val()
                     ,address: $("#address").val()
+                    ,sex: $("#sex").val()
                 }
             });
             //阻止表单跳转，如果需要表单跳转，去掉这段即可。

@@ -31,6 +31,9 @@
             <if test="address != null and address != ''">
                 and address = #{address,jdbcType=VARCHAR}
             </if>
+            <if test="sex != null">
+                and sex = #{sex,jdbcType=NUMERIC}
+            </if>
         </where>
         limit #{start},#{limit}
 	</select>
@@ -43,6 +46,9 @@
             </if>
             <if test="address != null and address != ''">
                 and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex,jdbcType=NUMERIC}
             </if>
         </where>
     </select>
