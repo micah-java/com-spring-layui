@@ -156,7 +156,6 @@
                             <!--可以加layui-btn-sm属性控制按钮的大小-->
                             <button type="button" class="layui-btn" lay-event="create">创建</button>
                             <button type="button" class="layui-btn" lay-event="batch_delete">批量删除</button>
-                            <button type="button" class="layui-btn" lay-event="reload">刷新</button>
                         </div>
                     </div>
                     <!--自定义lineToolBar-->
@@ -549,15 +548,6 @@
                         });
                     }
                     break;
-                case "reload":
-                    //tableIns.reload();
-                    //注意，user_table取得是table容器的索引，即table实例中id
-                    table.reload('user_table', {
-                        url: '/query'
-                        ,where: {} //设定异步数据接口的额外参数
-                        //,height: 300
-                    });
-                    break;
             }
         });
 
@@ -823,6 +813,7 @@
         });
 
         form.on('submit(user_table_query)',function () {
+            //注意，user_table取得是table容器的索引，即table实例中id
             table.reload('user_table', {
                 url: '/query',
                 where: {
