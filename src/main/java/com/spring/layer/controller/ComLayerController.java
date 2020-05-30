@@ -26,7 +26,7 @@ public class ComLayerController {
 
     @RequestMapping("/query")
     @ResponseBody
-    public Result<List<User>> query(User user){
+    public Result<List<User>> query(@RequestBody User user){
         List<User> users = userService.query(user);
         int size = userService.count(user);
         Result<List<User>> userResult = new Result<>(0, size, users);

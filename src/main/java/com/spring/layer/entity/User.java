@@ -80,16 +80,4 @@ public class User extends BaseRequest {
         this.content = content;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", age=" + age +
-                ", sex=" + sex +
-                ", address='" + address + '\'' +
-                ", interest='" + interest + '\'' +
-                ", content='" + content + '\'' +
-                '}';
-    }
 }

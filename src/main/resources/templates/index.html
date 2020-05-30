@@ -109,7 +109,7 @@
                     <fieldset class="layui-elem-field layui-field-title">
                         <legend>查询条件</legend>
                     </fieldset>
-                    <form action="" class="layui-form" method="post">
+                    <form action="" class="layui-form" id="user_table_form" lay-filter="user_table_form">
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">姓名</label>
@@ -118,27 +118,15 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">开始时间</label>
-                                <div class="layui-input-inline">
-                                    <input class="layui-input" readonly type="text" id="startTime" name="startTime"/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">结束时间</label>
-                                <div class="layui-input-inline">
-                                    <input class="layui-input" readonly type="text" id="endTime" name="endTime"/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
                                 <label class="layui-form-label">地址</label>
                                 <div class="layui-input-inline">
-                                    <input class="layui-input" type="text" name="age" placeholder="请输入地址"/>
+                                    <input class="layui-input" type="text" name="address" placeholder="请输入地址"/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-filter="user_table_condition">查询</button>
+                                <button class="layui-btn" lay-filter="user_table_query" id="user_table_query">查询</button>
                                 <button class="layui-btn layui-btn-primary" type="reset">重置</button>
                             </div>
                         </div>
@@ -339,7 +327,20 @@
                                     <input type="checkbox" name="open" lay-skin="switch" lay-filter="switch_open" lay-text="ON|OFF" checked="">
                                 </div>
                             </div>
-
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">开始时间</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" readonly type="text" id="startTime" name="startTime"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">结束时间</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" readonly type="text" id="endTime" name="endTime"/>
+                                </div>
+                            </div>
                         </div>
                         <!--普通文本域-->
                         <div class="layui-form-item layui-form-text">
@@ -488,6 +489,8 @@
             , id: 'user_table'//设定容器唯一id,从layui 2.2.0开始，从<table id="test"></table>中的id参数中获取。
             , height: 420
             , url: '/query' //数据接口
+            , method: "post"//默认get
+            , contentType:"application/json"
             , title: '用户表'//数据导出来的标题
             , page: true //开启分页
             , toolbar: '#user_tool_bar' //开启工具栏，默认default
@@ -841,6 +844,34 @@
         });
         laydate.render({
             elem:"#endTime"
+        });
+
+        $("#user_table_query").on("click",function () {
+            debugger;
+            var page = tableIns.config.page.curr;//获取当前页码
+            var limit = tableIns.config.page.limit;
+            //序列化表单数据
+            var params = $("#user_table_form").serializeArray();
+            var array = {};
+            $.map(params,function (item,index) {
+                array[item['name']] = item['value'];
+            });
+            array.page = page,array.limit = limit;
+            var data = JSON.stringify(array);
+            $.ajax({
+                url: "/query",
+                type: "POST",
+                data: data,
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //待处理TODO
+                },
+                error: function (data) {}
+            });
+            //阻止表单跳转，如果需要表单跳转，去掉这段即可。
+            return false;
         });
     });
 </script>

@@ -41,8 +41,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> query(User user) {
-        int start = (user.getPage() - 1) * user.getLimit();
-        user.setStart(start);
+        if(user != null){
+            int start = (user.getPage() - 1) * user.getLimit();
+            user.setStart(start);
+        }
         return userMapper.query(user);
     }
 

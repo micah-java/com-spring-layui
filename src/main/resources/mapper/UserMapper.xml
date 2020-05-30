@@ -17,7 +17,10 @@
 		SELECT * FROM User
         <where>
             <if test="name != null and name != ''">
-                name = #{name,jdbcType=VARCHAR}
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address,jdbcType=VARCHAR}
             </if>
         </where>
         limit #{start},#{limit}
@@ -27,7 +30,10 @@
         SELECT count(*) FROM User
         <where>
             <if test="name != null and name != ''">
-                name = #{name,jdbcType=VARCHAR}
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
