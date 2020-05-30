@@ -502,7 +502,10 @@
                 [ //表头
                     {type: 'checkbox', fixed: 'left'},
                     {field: 'id', title: 'ID', sort: true, fixed: 'left', align: "center", totalRowText: '合计：'},
-                    {field: 'name', title: '用户名', edit: true, align: "center"},
+                    {field: 'name', title: '用户名', align: "center",templet:function (data) {
+                            return data.name + '<span class="layui-icon layui-icon-file"></span>';
+                        }
+                    },
                     {field: 'age', title: '年龄', sort: true, align: "center", totalRow: true},
                     {
                         field: 'sex', title: '性别', align: "center",templet: function (data) {
