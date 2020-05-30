@@ -26,7 +26,7 @@ public class ComLayerController {
 
     @RequestMapping("/query")
     @ResponseBody
-    public Result<List<User>> query(@RequestBody User user){
+    public Result<List<User>> query(User user){
         List<User> users = userService.query(user);
         int size = userService.count(user);
         Result<List<User>> userResult = new Result<>(0, size, users);
@@ -50,6 +50,13 @@ public class ComLayerController {
     @ResponseBody
     public Result deleteUser(@PathVariable Integer id){
         int lines = userService.deleteUserById(id);
+        return new Result(0,lines,null);
+    }
+
+    @RequestMapping("/batch/delete")
+    @ResponseBody
+    public Result batchDelete(@RequestParam(name = "ids") List<Integer> ids){
+        int lines = userService.batchDelete(ids);
         return new Result(0,lines,null);
     }
 }

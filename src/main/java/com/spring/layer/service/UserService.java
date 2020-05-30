@@ -11,6 +11,7 @@ public interface UserService {
     public int edit(User user);
     public int create(User user);
     public int deleteUserById(Integer id);
+    public int batchDelete(List<Integer> ids);
     public List<User> query(User user);
     public int count(User user);
 }

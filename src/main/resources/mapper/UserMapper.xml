@@ -13,6 +13,15 @@
     <delete id="deleteUserById" parameterType="int">
         DELETE FROM USER WHERE id=#{id}
     </delete>
+    <delete id="batchDelete" parameterType="list">
+        DELETE FROM USER
+        <where>
+            id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")" index="">
+                #{item}
+            </foreach>
+        </where>
+    </delete>
     <select id="query" parameterType="com.spring.layer.entity.User" resultType="com.spring.layer.entity.User">
 		SELECT * FROM User
         <where>

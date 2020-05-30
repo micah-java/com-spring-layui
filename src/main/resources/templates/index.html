@@ -109,7 +109,11 @@
                     <fieldset class="layui-elem-field layui-field-title">
                         <legend>查询条件</legend>
                     </fieldset>
-                    <form action="" class="layui-form" id="user_table_form" lay-filter="user_table_form">
+                    <form action="/query" method="post" class="layui-form" id="user_table_form" lay-filter="user_table_form">
+
+                        <input type="hidden" name="page" id="page" value=""/>
+                        <input type="hidden" name="limit" id="limit" value=""/>
+
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">姓名</label>
@@ -126,7 +130,7 @@
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-filter="user_table_query" id="user_table_query">查询</button>
+                                <button class="layui-btn" lay-submit="" type="submit" lay-filter="user_table_query" id="user_table_query">查询</button>
                                 <button class="layui-btn layui-btn-primary" type="reset">重置</button>
                             </div>
                         </div>
@@ -141,7 +145,6 @@
                             <!--可以加layui-btn-sm属性控制按钮的大小-->
                             <button type="button" class="layui-btn" lay-event="create">创建</button>
                             <button type="button" class="layui-btn" lay-event="batch_delete">批量删除</button>
-                            <button type="button" class="layui-btn" lay-event="selected">获取选中数据</button>
                             <button type="button" class="layui-btn" lay-event="reload">刷新</button>
                         </div>
                     </div>
@@ -377,10 +380,6 @@
     <div class="layui-footer">
         <!-- 底部固定区域 -->
         © layui.com - 底部固定区域
-        <button type="button" id="warm_btn" class="layui-btn layui-btn-warm">正常暖色</button>
-        <button type="button" id="change_btn" class="layui-btn layui-btn-warm">切换图表</button>
-        <button type="button" id="delete_btn" class="layui-btn layui-btn-warm">删除图表</button>
-        <button type="button" id="delete_btns" class="layui-btn layui-btn-warm">删除所有</button>
     </div>
 </div>
 
@@ -451,31 +450,6 @@
             , layedit = layui.layedit
         ;
 
-        $("#warm_btn").click(function () {
-            element.tabAdd('user_tab', {
-                title: '选项卡的标题'
-                , content: '选项卡的内容' //支持传入html
-            });
-        });
-        //切换图表
-        $("#change_btn").click(function () {
-            element.tabChange('user_tab', '2');
-        });
-        //删除图表
-        $("#delete_btn").click(function () {
-            element.tabDelete('user_tab', '2');
-        });
-        //删除所有tab
-        $("#delete_btns").click(function () {
-            var titles = $(".user_tab_title");
-            //jQuery中的遍历循环
-            $.each(titles, function (index, item) {
-                //获取元素的属性
-                var layId = item.getAttribute("lay-id");
-                element.tabDelete('user_tab', layId);
-            })
-        });
-
         //监听折叠面板
         element.on('collapse(user_collapse)', function (data) {
             console.log(data.show); //得到当前面板的展开状态，true或者false
@@ -490,18 +464,20 @@
             , height: 420
             , url: '/query' //数据接口
             , method: "post"//默认get
-            , contentType:"application/json"
+            //, contentType: "application/json"
             , title: '用户表'//数据导出来的标题
             , page: true //开启分页
             , toolbar: '#user_tool_bar' //开启工具栏，默认default
             , defaultToolbar: ['filter', 'print', 'exports']//过滤，打印，导出
             , height: "full"
             , cellMinWidth: 100  //设置列默认的最小宽度
+            , limit: 10
             , done: function (res, curr, count) {//数据渲染完的回调,可以借此做一些其它的操作
-
+                debugger;
+                $("#page").val(curr);
+                $("#limit").val(tableIns.config.limit);
             }
             , totalRow: true //开启合计行
-            , limit: 10
             , cols: [
                 [ //表头
                     {type: 'checkbox', fixed: 'left'},
@@ -530,6 +506,8 @@
 
         //监听table头工具栏事件
         table.on('toolbar(user_table)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data; //获取选中的数据
             switch (obj.event) {
                 case 'create':
                     userCreatePopups();
@@ -538,15 +516,10 @@
                     if (data.length === 0) {
                         layer.msg('请选择一行');
                     } else {
-                        layer.msg('删除');
+                        layer.confirm('真的删除行么', function(index){
+                            batchDeleteUser(data,index);
+                        });
                     }
-                    break;
-                case 'selected':
-                    var checkStatus = table.checkStatus(obj.config.id);
-                    var data = checkStatus.data; //获取选中的数据
-                    console.log(data) //获取选中行的数据
-                    console.log(data.length) //获取选中行数量，可作为是否有选中行的条件
-                    console.log(checkStatus.isAll ) //表格是否全选
                     break;
                 case "reload":
                     //tableIns.reload();
@@ -584,7 +557,6 @@
             var params = $("#create_popups_form").serializeArray();
             var array = {};
             $.map(params,function (item,index) {
-                debugger;
                 array[item['name']] = item['value'];
             });
             var data = JSON.stringify(array);
@@ -609,19 +581,33 @@
             return false;
         });
 
-        //监听checkbox事件
-        table.on('checkbox(user_table)', function (obj) {
-            console.log(obj.checked); //当前是否选中状态
-            console.log(obj.data); //选中行的相关数据
-            console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
-        });
+        function batchDeleteUser(data,index){
+            var idArr = [];
+            debugger;
+            $.each(data,function (idx,item) {
+                idArr.push(item.id);
+            });
+            var obj = {"ids":idArr};
+            $.ajax({
+                url: "/batch/delete",
+                data: obj,
+                type: "POST",
+                dataType: "json",
+                //contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (res) {
+                    //关闭弹出层
+                    layer.close(index);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                },
+                error:function (res) {}
+            });
+        }
 
-        //编辑行事件
-        table.on('edit(user_table)', function (obj) { //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
-            console.log(obj.value); //得到修改后的值
-            console.log(obj.field); //当前编辑的字段名
-            console.log(obj.data); //所在行的所有相关数据
-        });
 
         //监听行工具中的事件，即行中的按钮
         table.on('tool(user_table)', function(obj){
@@ -661,7 +647,6 @@
             var params = $("#edit_popups_form").serializeArray();
             var array = {};
             $.map(params,function (item,index) {
-                debugger;
                 array[item['name']] = item['value'];
             });
             var data = JSON.stringify(array);
@@ -708,43 +693,6 @@
                 error: function (data) {}
             });
         }
-
-        //监听表单事件
-        //监听提交
-        form.on('submit(user_table_submit)', function(data){
-            layer.msg(JSON.stringify(data.field));
-            //注意，这里可以使用异步提交ajax
-            return false;
-        });
-
-        //监听下拉框
-        form.on('select(interest)', function(data){
-            console.log(data.elem); //得到select原始DOM对象
-            console.log(data.value); //得到被选中的值
-            console.log(data.othis); //得到美化后的DOM对象
-        });
-
-        //监听复选框
-        form.on('checkbox(like)', function(data){
-            console.log(data.elem); //得到checkbox原始DOM对象
-            console.log(data.elem.checked); //是否被选中，true或者false
-            console.log(data.value); //复选框value值，也可以通过data.elem.value得到
-            console.log(data.othis); //得到美化后的DOM对象
-        });
-
-        //监听开关事件
-        form.on('switch(switch_close)', function(data){
-            console.log(data.elem); //得到checkbox原始DOM对象
-            console.log(data.elem.checked); //开关是否开启，true或者false
-            console.log(data.value); //开关value值，也可以通过data.elem.value得到
-            console.log(data.othis); //得到美化后的DOM对象
-        });
-
-        //监听单选框事件
-        form.on('radio(flag)', function(data){
-            console.log(data.elem); //得到radio原始DOM对象
-            console.log(data.value); //被点击的radio的value值
-        });
 
         //渲染，向select中添加一个元素
         $("#render_select").on("click",function () {
@@ -846,8 +794,7 @@
             elem:"#endTime"
         });
 
-        $("#user_table_query").on("click",function () {
-            debugger;
+        $("#user_table_query123").on("click",function () {
             var page = tableIns.config.page.curr;//获取当前页码
             var limit = tableIns.config.page.limit;
             //序列化表单数据

@@ -40,6 +40,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int batchDelete(List<Integer> ids) {
+        return userMapper.batchDelete(ids);
+    }
+
+    @Override
     public List<User> query(User user) {
         if(user != null){
             int start = (user.getPage() - 1) * user.getLimit();
