@@ -33,7 +33,7 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq"; class="layui-nav-img"/>贤心
+                    <!--<img src="http://t.cn/RCzsdCq"; class="layui-nav-img"/>-->贤心
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="">基本资料</a></dd>
@@ -97,6 +97,7 @@
                 <li class="user_tab_title" lay-id="2">面板</li>
                 <li class="user_tab_title" lay-id="3">表单</li>
                 <li class="user_tab_title" lay-id="4">弹出层</li>
+                <li class="user_tab_title" lay-id="5">tree</li>
             </ul>
             <!--layui-tab-content:代表tab的内容-->
             <div class="layui-tab-content">
@@ -141,7 +142,9 @@
                         </div>
                         <div class="layui-form-item" style="text-align: center;">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-submit="" type="submit" lay-filter="user_table_query">查询</button>
+                                <button class="layui-btn" lay-submit="" lay-filter="user_table_query">
+                                    查询<i class="layui-icon">&#xe608;</i>
+                                </button>
                                 <button class="layui-btn layui-btn-primary" type="reset">重置</button>
                             </div>
                         </div>
@@ -382,6 +385,10 @@
                     <button class="layui-btn layui-btn-normal" id="open_type_1">open.type.1</button>
                     <button class="layui-btn layui-btn-normal" id="open_type_2">open.type.2</button>
                 </div>
+                <!--tree 树形组件-->
+                <div class="layui-tab-item">
+                    <div id="user_tree"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -462,12 +469,43 @@
         </div>
     </form>
 </div>
+<div id="addUserTreePopups" style="display: none;">
+    <form class="layui-form" lay-filter="add_user_tree_form" id="add_user_tree_form">
+
+        <input name="pid" id="pid" value="" type="hidden"/>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="title" placeholder="请输入标题"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">url</label>
+            <div class="layui-input-block">
+                <input class="layui-input" type="text" name="url" placeholder="请输入url"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input class="layui-input" type="text" name="sort" placeholder="请输入序号"/>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="add_user_tree">添加</button>
+                <button class="layui-btn" type="reset">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
 <!-- 弹出层结束 -->
 
 <script th:src="@{/layui/layui.js}"></script>
 <script>
     //引入layui模块
-    layui.use(['laydate','layedit', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider','jquery','form'], function() {
+    layui.use(['laydate','layedit', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider','jquery','form', 'tree'], function() {
         var laydate = layui.laydate //日期
             , laypage = layui.laypage //分页
             , layer = layui.layer //弹层
@@ -479,6 +517,7 @@
             , $ = layui.jquery
             , form = layui.form
             , layedit = layui.layedit
+            , tree = layui.tree
         ;
 
         //执行一个table实例
@@ -503,7 +542,7 @@
                     {type: 'checkbox', fixed: 'left'},
                     {field: 'id', title: 'ID', sort: true, fixed: 'left', align: "center", totalRowText: '合计：'},
                     {field: 'name', title: '用户名', align: "center",templet:function (data) {
-                            return data.name + '<span class="layui-icon layui-icon-file"></span>';
+                            return data.name + '<i class="layui-icon layui-icon-file" lay-event="name_icon_copy" style="font-size: 15px;"></i>';
                         }
                     },
                     {field: 'age', title: '年龄', sort: true, align: "center", totalRow: true},
@@ -521,7 +560,7 @@
                     },
                     {field: 'address', title: '地址', align: "center"},
                     {field: 'interest', title: '兴趣', align: "center"},
-                    {field: 'content', title: '内容'},
+                    {field: 'content', title: '内容', align:"center"},
                     {title: '操作', fixed: 'right', toolbar: "#user_line_tool_bar", align: "center"}
                 ]
             ]
@@ -635,6 +674,8 @@
                 layer.confirm('真的删除行么', function(index){
                     deleteUser(data,index);//传数据
                 });
+            } else if(layEvent == 'name_icon_copy'){
+                layer.alert("复制");
             }
         });
 
@@ -820,6 +861,104 @@
             //阻止表单跳转，如果需要表单跳转，去掉这段即可。
             return false;
         });
+
+        element.on('tab(user_tab)',function (data) {
+            if(data.index == 4){
+                rendUserTree();
+            }
+        });
+
+        function rendUserTree() {
+            $.ajax({
+                url: "/query/tree",
+                type: "POST",
+                data: {},
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (res) {
+                    treeRender(res);
+                },
+                error: function (res) {}
+            });
+        }
+
+        //渲染树组件
+        function treeRender(res){
+            //树组件
+            tree.render({
+                elem: "#user_tree"//指向容器选择器
+                ,id: "user_tree"
+                ,showCheckbox: true//是否显示复选框
+                ,edit: ['add','update','del']//是否开启节点的操作图标
+                ,onlyIconControl: false//是否允许节点左侧图标控制展开收缩
+                ,showLine: true //是否开启连接线
+                ,data: res.data
+                ,operate:function (obj) {
+                    var type = obj.type//操作类型
+                        ,data = obj.data;//当前节点数据
+                    if(type == 'add'){
+                        userPopupsIndex = layer.open({
+                            type: 1,
+                            title: '添加树',
+                            shadeClose: false,
+                            shade: 0.01,
+                            maxmin: true,
+                            area: '500px',
+                            fix: false,
+                            content: $("#addUserTreePopups"),
+                            success:function(layero,index){
+                                //清空表单数据
+                                $("#add_user_tree_form")[0].reset();
+                                $("#pid").val(data.id);
+                            }
+                        });
+                    }else if(type == 'del'){
+                        $.ajax({
+                            url: "/del/tree/" + data.id,
+                            type: "DELETE",
+                            data: {},
+                            dataType: "json",
+                            contentType: "application/json;charset=utf-8",
+                            traditional: true,
+                            success: function (res) {
+                                //tree.reload("user_tree",{});
+                                rendUserTree();
+                            }
+                        });
+                    }
+                }
+            });
+
+            form.on('submit(add_user_tree)',function () {
+                debugger;
+                //序列化表单数据
+                var params = $("#add_user_tree_form").serializeArray();
+                var array = {};
+                $.map(params,function (item,index) {
+                    array[item['name']] = item['value'];
+                });
+                var data = JSON.stringify(array);
+                //添加userTree节点
+                $.ajax({
+                    url: "/add/tree",
+                    type: "POST",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    traditional: true,
+                    success: function (res) {
+                        layer.close(userPopupsIndex);
+                        rendUserTree();
+                        //tree.reload("user_tree",{});
+                        //切换tab
+                        //element.tabChange('user_tab', '5');
+                    },
+                    error: function (res) {alert("123789");}
+                });
+                return false;
+            });
+        }
     });
 </script>
 </body>

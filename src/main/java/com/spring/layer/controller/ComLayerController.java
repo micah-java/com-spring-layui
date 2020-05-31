@@ -2,6 +2,7 @@ package com.spring.layer.controller;
 
 import com.spring.layer.entity.Result;
 import com.spring.layer.entity.User;
+import com.spring.layer.entity.UserTree;
 import com.spring.layer.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,27 @@ public class ComLayerController {
     @ResponseBody
     public Result batchDelete(@RequestParam(name = "ids") List<Integer> ids){
         int lines = userService.batchDelete(ids);
+        return new Result(0,lines,null);
+    }
+
+    @RequestMapping("/query/tree")
+    @ResponseBody
+    public Result queryTree(){
+        List<UserTree> userTree = userService.queryTree();
+        return new Result(0,userTree.size(),userTree);
+    }
+
+    @RequestMapping("/add/tree")
+    @ResponseBody
+    public Result addTree(@RequestBody UserTree userTree){
+        int lines = userService.addTree(userTree);
+        return new Result(0,lines,null);
+    }
+
+    @RequestMapping("/del/tree/{id}")
+    @ResponseBody
+    public Result addTree(@PathVariable Integer id){
+        int lines = userService.delTree(id);
         return new Result(0,lines,null);
     }
 }
