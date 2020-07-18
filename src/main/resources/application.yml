@@ -4,27 +4,20 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: root
-    # 配置数据源
-    type: com.alibaba.druid.pool.DruidDataSource
-#  thymeleaf:
-#    cache: false
-#    prefix: classpath:/templates
-#    suffix: .html
-#    mode: HTML5
-#    encoding: UTF-8
-#    content-type: text/html;charset=utf-8
-#    enable-spring-el-compiler: true
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    content-type: text/html;charset=utf-8
+    enable-spring-el-compiler: true
   resources:
-    static-locations: classpath:/static/,classpath:/templates
-  #    chain:
-#      strategy:
-#        content:
-#          enabled: true
-#          paths: /**
-  # 热部署
-  devtools:
-    restart:
-      enabled: true
+    chain:
+      strategy:
+        content:
+          enabled: true
+          paths: /**
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
