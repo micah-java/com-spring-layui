@@ -1,5 +1,7 @@
 package com.spring.layer.entity;
 
+import java.util.Objects;
+
 public class User extends BaseRequest {
 
     private Integer id;
@@ -80,4 +82,30 @@ public class User extends BaseRequest {
         this.content = content;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return name.equals(user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("User{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", age=").append(age);
+        sb.append(", sex=").append(sex);
+        sb.append(", address='").append(address).append('\'');
+        sb.append(", interest='").append(interest).append('\'');
+        sb.append(", content='").append(content).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
