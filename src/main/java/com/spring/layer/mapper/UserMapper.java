@@ -20,5 +20,7 @@ public interface UserMapper {
 
     List<User> query(User user);
 
+    User queryUser(User user);
+
     int batchDelete(@Param("ids") List<Integer> ids);
 }

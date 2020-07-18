@@ -52,4 +52,19 @@
             </if>
         </where>
     </select>
+
+    <select id="queryUser" parameterType="com.spring.layer.entity.User" resultType="com.spring.layer.entity.User">
+        SELECT * FROM User
+        <where>
+            <if test="name != null and name != ''">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex,jdbcType=NUMERIC}
+            </if>
+        </where>
+    </select>
 </mapper>

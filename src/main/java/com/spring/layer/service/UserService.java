@@ -17,5 +17,6 @@ public interface UserService {
     public int addTree(UserTree userTree);
     public int delTree(Integer id);
     public List<User> query(User user);
+    public User queryUser(User user);
     public int count(User user);
 }

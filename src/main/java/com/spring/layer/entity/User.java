@@ -6,6 +6,7 @@ public class User extends BaseRequest {
 
     private Integer id;
     private String name;
+    private String password;
     private Integer age;
     private Integer sex;
 
@@ -40,6 +41,14 @@ public class User extends BaseRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Integer getAge() {

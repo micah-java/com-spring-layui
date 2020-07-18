@@ -61,6 +61,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User queryUser(User user) {
+        return userMapper.queryUser(user);
+    }
+
+    @Override
     public int count(User user) {
         return userMapper.count(user);
     }
