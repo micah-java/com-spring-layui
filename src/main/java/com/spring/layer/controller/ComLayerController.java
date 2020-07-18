@@ -20,11 +20,6 @@ public class ComLayerController {
     @Autowired
     UserService userService;
 
-    @RequestMapping("/index")
-    public String index(){
-        return "/index";
-    }
-
     @RequestMapping("/query")
     @ResponseBody
     public Result<List<User>> query(User user){
