@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.layer.mapper.MenuMapper">
+    <select id="queryMenuList" parameterType="com.spring.layer.entity.Menu" resultType="com.spring.layer.entity.Menu">
+        SELECT * FROM menu
+        <where>
+            <if test="name != null and name != ''">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" parameterType="com.spring.layer.entity.Menu">
+        INSERT INTO `menu` (`parent_id`, `name`, `url`, `permission`, `type`, `icon`, `status`, `sort`, `create_by`, `create_time`)
+        VALUES (#{parentId}, #{name}, #{url}, #{permission}, #{type}, #{icon}, #{status}, #{sort}, #{createBy}, now());
+    </insert>
+
+    <select id="queryById" parameterType="int" resultType="com.spring.layer.entity.Menu">
+        SELECT * FROM Menu where id = #{id}
+    </select>
+
+    <update id="editMenu" parameterType="com.spring.layer.entity.Menu">
+        UPDATE `menu` SET `parent_id`= #{parentId}, `name`=#{name}, `url`=#{url}, `permission`=#{permission},
+         `type`=#{type}, `icon`=#{icon}, `status`=#{status}, `sort`= #{sort},
+         `create_by`= #{createBy}, `create_time`= now() WHERE (`id`='1');
+    </update>
+    <delete id="deleteById" parameterType="int">
+        delete FROM menu WHERE
+         id = #{id} or
+        id IN (
+                SELECT t3.id FROM
+                (
+                    SELECT *, IF (FIND_IN_SET(t1.parent_id ,@p) > 0 ,@p := CONCAT(@p, ',', t1.id),0) AS childId
+                    FROM (SELECT id,parent_id FROM menu t ORDER BY id) t1,(SELECT @p := #{id}) t2
+                ) t3 WHERE childId != 0
+            );
+    </delete>
+</mapper>

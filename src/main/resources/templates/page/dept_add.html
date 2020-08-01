@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>添加部门</title>
+    <link th:href="@{/lib/layui-v2.5.5/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <input type="hidden" name="parentId" th:value="${parentId}" />
+    <div class="layui-form-item">
+        <label class="layui-form-label required">部门名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" lay-reqtext="部门名称不能为空" placeholder="请输入部门名称" value="" class="layui-input"/>
+            <tip>填写自己的部门名称。</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">排序号</label>
+        <div class="layui-input-block">
+            <input type="text" name="sort" lay-verify="required" lay-reqtext="排序号不能为空" placeholder="请输入排序号" value="" class="layui-input"/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <!-- checked="" 该属性代表开 -->
+            <input type="checkbox" name="status" checked="" lay-skin="switch" lay-text="ON|OFF">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <!--根据后台的传值进行判断-->
+        <div class="layui-input-block" th:if="${type == 0}">
+            <!--公司下添加部门-->
+            <input type="radio" name="type" value = "1" title="部门" checked="">
+        </div>
+        <div class="layui-input-block" th:if="${type == 1}">
+            <!--部门下添加科室-->
+            <input type="radio" name="type" value = "2" title="科室" checked="">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">保存</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{/lib/layui-v2.5.5/layui.js}"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var field = data.field;
+            if(field.status == 'on'){
+                field.status = 1;
+            }else {
+                field.status = 0;
+            }
+            $.ajax({
+                url: "/dept/add",
+                type: "POST",
+                data: field,
+                dataType: "json",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    if(data.code == 0){
+                        var index = layer.msg("操作成功",{
+                            icon:1,
+                            time:1500//1.5秒关闭
+                        },function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            //重新加载
+                            parent.window.location.reload();
+                        });
+                    }
+                },
+                error: function (data) {
+
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

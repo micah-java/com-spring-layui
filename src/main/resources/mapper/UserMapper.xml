@@ -5,10 +5,10 @@
 		 SELECT * FROM User WHERE id = #{id}
 	</select>
     <update id="edit" parameterType="com.spring.layer.entity.User">
-        update user set name=#{name},age=#{age} where id=#{id}
+        update user set name=#{name},telephone = #{telephone,jdbcType=VARCHAR},email=#{email} where id=#{id}
     </update>
     <insert id="create" parameterType="com.spring.layer.entity.User">
-        insert into user set name=#{name},age=#{age}
+        insert into user set name=#{name},telephone = #{telephone,jdbcType=VARCHAR},email=#{email}
     </insert>
     <delete id="deleteUserById" parameterType="int">
         DELETE FROM USER WHERE id=#{id}
@@ -28,11 +28,11 @@
             <if test="name != null and name != ''">
                 and name = #{name,jdbcType=VARCHAR}
             </if>
-            <if test="address != null and address != ''">
-                and address = #{address,jdbcType=VARCHAR}
+            <if test="telephone != null and telephone != ''">
+                and telephone = #{telephone,jdbcType=VARCHAR}
             </if>
-            <if test="sex != null">
-                and sex = #{sex,jdbcType=NUMERIC}
+            <if test="email != null">
+                and email = #{email,jdbcType=NUMERIC}
             </if>
         </where>
         limit #{start},#{limit}
@@ -44,11 +44,11 @@
             <if test="name != null and name != ''">
                 and name = #{name,jdbcType=VARCHAR}
             </if>
-            <if test="address != null and address != ''">
-                and address = #{address,jdbcType=VARCHAR}
+            <if test="telephone != null and telephone != ''">
+                and telephone = #{telephone,jdbcType=VARCHAR}
             </if>
-            <if test="sex != null">
-                and sex = #{sex,jdbcType=NUMERIC}
+            <if test="email != null">
+                and email = #{email,jdbcType=NUMERIC}
             </if>
         </where>
     </select>
@@ -59,11 +59,11 @@
             <if test="name != null and name != ''">
                 and name = #{name,jdbcType=VARCHAR}
             </if>
-            <if test="address != null and address != ''">
-                and address = #{address,jdbcType=VARCHAR}
+            <if test="telephone != null and telephone != ''">
+                and telephone = #{telephone,jdbcType=VARCHAR}
             </if>
-            <if test="sex != null">
-                and sex = #{sex,jdbcType=NUMERIC}
+            <if test="email != null">
+                and email = #{email,jdbcType=NUMERIC}
             </if>
         </where>
     </select>

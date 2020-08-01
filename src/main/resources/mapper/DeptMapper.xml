@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.layer.mapper.DeptMapper">
+    <select id="quertDeptList" parameterType="com.spring.layer.entity.Dept" resultType="com.spring.layer.entity.Dept">
+        SELECT * FROM dept
+        <where>
+            <if test="name != null and name != ''">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" parameterType="com.spring.layer.entity.Dept">
+        insert into dept(parent_id,name,type,sort,status,update_time,create_by,create_time)
+        values (#{parentId},#{name},#{type},#{sort},#{status},now(),1,now())
+    </insert>
+
+    <select id="queryById" parameterType="int" resultType="com.spring.layer.entity.Dept">
+        SELECT * FROM dept where id = #{id}
+    </select>
+
+    <update id="editDept" parameterType="com.spring.layer.entity.Dept">
+        update dept set name = #{name},sort = #{sort},status = #{status},type = #{type} where id = #{id}
+    </update>
+    <!-- 查询部门id=3及其所有的子部门
+        SELECT * FROM dept WHERE
+         id = 3 or
+        id IN (SELECT t3.id FROM
+            (SELECT *, IF ( FIND_IN_SET(t1.parent_id ,@p) > 0 ,@p := CONCAT(@p, ',', id),0) AS childId FROM
+                (SELECT	id,parent_id FROM dept t ORDER BY id) t1,
+                     (SELECT @p := 3) t2) t3 WHERE childId != 0);
+    -->
+    <delete id="deleteById" parameterType="int">
+        delete FROM dept WHERE
+         id = #{id} or
+        id IN (
+                SELECT t3.id FROM
+                (
+                    SELECT *, IF (FIND_IN_SET(t1.parent_id ,@p) > 0 ,@p := CONCAT(@p, ',', t1.id),0) AS childId
+                    FROM (SELECT id,parent_id FROM dept t ORDER BY id) t1,(SELECT @p := #{id}) t2
+                ) t3 WHERE childId != 0
+            );
+    </delete>
+</mapper>

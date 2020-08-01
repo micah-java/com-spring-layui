@@ -1,6 +1,7 @@
 package com.spring.layer.entity;
 
 import java.io.Serializable;
+
 /**
  * layui有自己的一套特定的数据格式交互（这很重要）
  * 必须参数code：0，msg：""，count：数据size（int）,data: 数据List
@@ -13,6 +14,10 @@ public class Result<T> implements Serializable {
      private T data;
 
     public Result() {
+    }
+
+    public static Result ok(){
+        return new Result(0,0,null);
     }
 
     public Result(Integer code, Integer count, T data) {
