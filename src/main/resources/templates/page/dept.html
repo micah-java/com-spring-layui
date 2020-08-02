@@ -65,24 +65,27 @@
 </script>
 <script th:src="@{/layui/layui.js}"></script>
 <script>
-    layui.extend({
-        treetable:'treetable-lay/treetable'
-    }).use(['table', 'treetable','form'], function () {
+    layui.config({
+        base:"/"
+    }).extend({
+        treeTable:'treetable-lay/treeTable'
+    }).use(['table', 'treeTable','form'], function () {
         var $ = layui.jquery;
         var table = layui.table;
-        var treetable = layui.treetable;
+        var treeTable = layui.treeTable;
         var form =  layui.form;
 
         // 渲染表格
         layer.load(2);
-        treetable.render({
-            treeColIndex: 1,
-            treeSpid: -1,
-            treeIdName: 'id',
-            treePidName: 'parentId',
+        var deptTreeTable = treeTable.render({
+            tree: {
+                iconIndex: 1,           // 折叠图标显示在第几列
+                isPidData: true,        // 是否是id、pid形式数据
+                idName: 'id',  // id字段名称
+                pidName: 'parentId'     // pid字段名称
+            },
             elem: '#dept-table',
             url: 'dept/query',
-            page: false,
             cols: [
                 [{type: 'numbers'},
                 {field: 'name',align: 'center',width:150, title: '部门名称'},
@@ -124,11 +127,11 @@
         });
 
         $('#btn-expand').click(function () {
-            treetable.expandAll('#dept-table');
+            deptTreeTable.expandAll();
         });
 
         $('#btn-fold').click(function () {
-            treetable.foldAll('#dept-table');
+            deptTreeTable.foldAll();
         });
 
         //监听工具条
