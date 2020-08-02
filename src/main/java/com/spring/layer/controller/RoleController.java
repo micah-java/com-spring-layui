@@ -1,8 +1,8 @@
 package com.spring.layer.controller;
 
-import com.spring.layer.entity.Result;
-import com.spring.layer.entity.Role;
-import com.spring.layer.entity.User;
+import com.spring.layer.entity.*;
+import com.spring.layer.service.MenuService;
+import com.spring.layer.service.RoleMenuService;
 import com.spring.layer.service.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,10 @@ public class RoleController {
 
     @Autowired
     RoleService roleService;
+    @Autowired
+    MenuService menuService;
+    @Autowired
+    RoleMenuService roleMenuService;
 
     @RequestMapping
     public String role(){
@@ -52,5 +56,20 @@ public class RoleController {
     public Result deleteRole(@PathVariable Integer id){
         int lines = roleService.deleteById(id);
         return new Result(0,lines,null);
+    }
+
+    @RequestMapping("/menuTree/{roleId}")
+    @ResponseBody
+    public Result<List<Menu>> menuTree(@PathVariable("roleId") Integer roleId){
+        List<Menu> menus = roleMenuService.queryRoleMenuTree(new RoleMenu(roleId));
+        Result<List<Menu>> menuResult = new Result<>(0, menus.size(), menus);
+        return menuResult;
+    }
+
+    @RequestMapping("/add/roleMenu")
+    @ResponseBody
+    public Result addRoleMenu(RoleMenu roleMenu){
+        Integer lines = roleMenuService.addRoleMenu(roleMenu);
+        return Result.ok();
     }
 }

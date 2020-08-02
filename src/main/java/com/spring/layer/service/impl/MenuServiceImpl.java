@@ -1,14 +1,18 @@
 package com.spring.layer.service.impl;
 
 import com.spring.layer.entity.Menu;
+import com.spring.layer.entity.TreeType;
 import com.spring.layer.mapper.MenuMapper;
+import com.spring.layer.mapper.RoleMenuMapper;
 import com.spring.layer.service.MenuService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MenuServiceImpl implements MenuService {
@@ -16,8 +20,17 @@ public class MenuServiceImpl implements MenuService {
     @Resource
     private MenuMapper menuMapper;
 
+    @Resource
+    private RoleMenuMapper roleMenuMapper;
+
     @Override
     public List<Menu> queryMenuList(Menu menu) {
+        List<Menu> menus = menuMapper.queryMenuList(menu);
+        return menus;
+    }
+
+    @Override
+    public List<Menu> queryMenuTree(Menu menu) {
         List<Menu> menus = menuMapper.queryMenuList(menu);
         List<Menu> menuRootTree = menus.stream().filter(e -> e.getParentId() == -1).collect(Collectors.toList());
         for(Menu m : menuRootTree){

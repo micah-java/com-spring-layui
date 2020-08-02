@@ -1,6 +1,5 @@
 package com.spring.layer.mapper;
 
-import com.spring.layer.entity.Dept;
 import com.spring.layer.entity.Role;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

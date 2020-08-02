@@ -1,5 +1,7 @@
 package com.spring.layer.entity;
 
+import org.springframework.util.CollectionUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +22,11 @@ public class Menu implements Serializable {
     private Date createTime;
 
     private List<Menu> children = new ArrayList<>();
+
+    private List<TreeType> checkArr;
+
+    public Menu() {
+    }
 
     public Integer getId() {
         return id;
@@ -115,5 +122,17 @@ public class Menu implements Serializable {
 
     public void setChildren(List<Menu> children) {
         this.children = children;
+    }
+
+    public List<TreeType> getCheckArr() {
+        if(CollectionUtils.isEmpty(checkArr)){
+            checkArr = new ArrayList<>();
+            checkArr.add(new TreeType("0","0"));
+        }
+        return checkArr;
+    }
+
+    public void setCheckArr(List<TreeType> checkArr) {
+        this.checkArr = checkArr;
     }
 }

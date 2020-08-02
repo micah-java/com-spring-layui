@@ -1,7 +1,9 @@
 package com.spring.layer.service.impl;
 
 import com.spring.layer.entity.Role;
+import com.spring.layer.entity.RoleMenu;
 import com.spring.layer.mapper.RoleMapper;
+import com.spring.layer.mapper.RoleMenuMapper;
 import com.spring.layer.service.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Resource
     private RoleMapper roleMapper;
+    @Resource
+    private RoleMenuMapper roleMenuMapper;
 
     @Override
     public List<Role> queryRoleList(Role role) {

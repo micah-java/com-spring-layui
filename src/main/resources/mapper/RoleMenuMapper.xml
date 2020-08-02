@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spring.layer.mapper.RoleMenuMapper">
+    <select id="queryRoleMenuList" parameterType="com.spring.layer.entity.RoleMenu" resultType="com.spring.layer.entity.RoleMenu">
+        SELECT * FROM role_menu
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addRoleMenu" parameterType="com.spring.layer.entity.RoleMenu">
+        insert into role_menu(role_id,menu_id) values
+        <foreach collection="menuIds" item="item" index="index" separator=",">
+            (#{roleId},#{item})
+        </foreach>
+    </insert>
+</mapper>

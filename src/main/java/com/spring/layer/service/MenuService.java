@@ -8,6 +8,8 @@ public interface MenuService {
 
     public List<Menu> queryMenuList(Menu menu);
 
+    public List<Menu> queryMenuTree(Menu menu);
+
     int add(Menu dept);
 
     Menu queryById(Integer id);
