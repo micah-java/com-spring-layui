@@ -29,7 +29,7 @@
 </div>
 <!--创建菜单-->
 <div id="create_popup" style="display: none;">
-    <div class="layui-form layuimini-form" lay-filter="create_popup">
+    <form class="layui-form" lay-filter="create_popup">
         <div class="layui-form-item">
             <label class="layui-form-label required">菜单名称</label>
             <div class="layui-input-block">
@@ -51,17 +51,43 @@
         <div class="layui-form-item">
             <label class="layui-form-label">类型</label>
             <input type="radio" name="type" id="type0" value = "0" title="目录" checked=""/>
-            <input type="radio" name="type" id="type3" value = "3" title="导航菜单"/>
             <input type="radio" name="type" id="type1" value = "1" title="菜单"/>
             <input type="radio" name="type" id="type2" value = "2" title="按钮"/>
         </div>
-    </div>
+    </form>
+</div>
+<!--修改菜单-->
+<div id="edit_popup" style="display: none;">
+    <form class="layui-form" lay-filter="edit_popup">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">菜单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" lay-reqtext="菜单名称不能为空" placeholder="请输入菜单名称" value="" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">排序号</label>
+            <div class="layui-input-block">
+                <input type="text" name="sort" lay-verify="required" lay-reqtext="排序号不能为空" placeholder="请输入排序号" value="" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单url</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" lay-verify="required" lay-reqtext="url不能为空" placeholder="请输入url" value="" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <input type="radio" name="type" id="edit_type0" value = "0" title="目录"/>
+            <input type="radio" name="type" id="edit_type1" value = "1" title="菜单"/>
+            <input type="radio" name="type" id="edit_type2" value = "2" title="按钮"/>
+        </div>
+    </form>
 </div>
 <!-- 操作列 -->
 <script type="text/html" id="auth-state">
-    {{# if(d.type == 0 || d.type == 1 || d.type == 3){ }}
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
-    {{# } }}
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
@@ -71,9 +97,8 @@
        base:"/"
    }).extend({
        treeTable:'treetable-lay/treeTable'
-   }).use(['table', 'treeTable','form','jquery'], function () {
+   }).use(['treeTable','form','jquery'], function () {
        var $ = layui.jquery;
-       var table = layui.table;
        var treeTable = layui.treeTable;
        var form = layui.form;
 
@@ -102,8 +127,6 @@
                                 return '<span class="layui-badge layui-bg-gray">菜单</span>';
                             } else if (res.type == 2) {
                                 return '<span class="layui-badge layui-bg-gray">按钮</span>';
-                            } else {
-                                return '<span class="layui-badge-rim">导航菜单</span>';
                             }
                         }
                     },
@@ -131,43 +154,76 @@
             menuTreeTable.foldAll();
         });
 
-        //监听工具条
-        table.on('tool(menu_table)', function (obj) {
+       //监听工具条
+       treeTable.on('tool(menu_table)', function (obj) {
             var data = obj.data;
             var layEvent = obj.event;
-
             if (layEvent === 'del') {
                 layer.msg('删除' + data.id);
             } else if (layEvent === 'edit') {
-                layer.msg('修改' + data.id);
+                layer.open({
+                    title: "修改菜单",
+                    type: 1,//打开一个弹框
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['50%'],
+                    content: $("#edit_popup"),
+                    success: function(layero){
+                        //layero是弹层的DOM对象
+                        $(layero).find("input[name='name']").val(data.name);
+                        $(layero).find("input[name='sort']").val(data.sort);
+                        $(layero).find("input[name='url']").val(data.url);
+                        $(layero).find("input[name='type']").val(data.type);
+                    }
+                    ,btn: ['保存', '取消']
+                    ,btnAlign: 'r'//按钮右对齐
+                    ,yes: function(index, layero){
+                        //按钮一的回调
+                        var name = $.trim($(layero).find("input[name='name']").val());
+                        var sort = $.trim($(layero).find("input[name='sort']").val());
+                        var url = $.trim($(layero).find("input[name='url']").val());
+                        var type = $.trim($(layero).find("input[name='type']").val());
+                        $.ajax({
+                            url: "/menu/edit",
+                            type: "POST",
+                            data: {"name":name,"sort":sort,"url":url,"type":type},
+                            dataType: "json",
+                            traditional: true,
+                            success: function (res) {
+                                //关闭弹出层
+                                if(res.code == 0){
+                                    var index = layer.msg("操作成功",function () {
+                                        // 关闭弹出层
+                                        layer.close(index);
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
             }else if(layEvent === 'add'){
 
             }
         });
 
         //监听table头工具栏事件，对应table中的lay-filter属性
-        table.on('toolbar(menu_table)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
-            var data = checkStatus.data; //获取选中的数据
+       treeTable.on('toolbar(menu_table)', function (obj) {
             var layEvent = obj.event;
             if(layEvent === 'create'){
                 //创建菜单
-                var parentIndex = parent.layer.open({
+                var index = layer.open({
                     title: "添加菜单",
                     type: 1,//打开一个弹框
                     shade: 0.2,
                     maxmin: true,
                     shadeClose: true,
-                    area: ['50%','50%'],
+                    area: ['50%'],
                     content: $("#create_popup"),
                     success: function(layero){
                         //layero是弹层的DOM对象
-                        //将菜单和按钮隐藏，这里没有生效
-                        $(layero).find("#type1").css('display','none');
-                        $(layero).find("#type2").css('display','none');
-                        var mask = $(".layui-layer-shade");
-                        mask.appendTo(layero.parent());
-                        form.render('radio'); //重新渲染
+                        $(layero).find("#type1").next().hide();//将菜单隐藏
+                        $(layero).find("#type2").next().hide();//将按钮隐藏
                     }
                     ,btn: ['保存', '取消']
                     ,btnAlign: 'r'//按钮右对齐
@@ -186,15 +242,9 @@
                             success: function (res) {
                                 //关闭弹出层
                                 if(res.code == 0){
-                                    var index = layer.msg("操作成功",{
-                                        icon:1,
-                                        time:1500//1.5秒关闭
-                                    },function () {
+                                    var index = layer.msg("操作成功",function () {
                                         // 关闭弹出层
                                         layer.close(index);
-                                        layer.close(parentIndex);
-                                        //重新加载
-                                        parent.window.location.reload();
                                     });
                                 }
                             }
@@ -204,7 +254,6 @@
                 return false;
             }
         });
-
     });
 </script>
 </body>

@@ -69,6 +69,7 @@ public class RoleController {
     @RequestMapping("/add/roleMenu")
     @ResponseBody
     public Result addRoleMenu(RoleMenu roleMenu){
+        int rows = roleMenuService.deleteRoleMenuByRoleId(roleMenu.getRoleId());
         Integer lines = roleMenuService.addRoleMenu(roleMenu);
         return Result.ok();
     }

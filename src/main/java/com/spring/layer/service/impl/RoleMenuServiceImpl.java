@@ -38,6 +38,11 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     }
 
     @Override
+    public int deleteRoleMenuByRoleId(Integer roleId) {
+        return roleMenuMapper.deleteRoleMenuByRoleId(roleId);
+    }
+
+    @Override
     public List<Menu> queryRoleMenuTree(RoleMenu roleMenu) {
         List<Menu> menus = menuMapper.queryMenuList(null);
         List<RoleMenu> roleMenus = roleMenuMapper.queryRoleMenuList(roleMenu);

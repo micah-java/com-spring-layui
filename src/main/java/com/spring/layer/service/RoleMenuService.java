@@ -12,4 +12,6 @@ public interface RoleMenuService {
     public List<Menu> queryRoleMenuTree(RoleMenu roleMenu);
 
     int addRoleMenu(RoleMenu roleMenu);
+
+    int deleteRoleMenuByRoleId(Integer roleId);
 }

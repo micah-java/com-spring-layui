@@ -21,7 +21,7 @@ public class ComLayerController {
 
     @RequestMapping("/index")
     public String index(Model model) {
-        List<Menu> menus = menuService.queryMenuList(null);
+        List<Menu> menus = menuService.queryMenuTree(null);
         model.addAttribute("menus",menus);
         return "index";
     }

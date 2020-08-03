@@ -19,4 +19,8 @@
             (#{roleId},#{item})
         </foreach>
     </insert>
+
+    <delete id="deleteRoleMenuByRoleId">
+        delete from role_menu where role_id = #{roleId}
+    </delete>
 </mapper>
