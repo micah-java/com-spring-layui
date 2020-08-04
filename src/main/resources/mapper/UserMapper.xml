@@ -23,7 +23,7 @@
         </where>
     </delete>
     <select id="query" parameterType="com.spring.layer.entity.User" resultType="com.spring.layer.entity.User">
-		SELECT * FROM User
+		SELECT * FROM user
         <where>
             <if test="name != null and name != ''">
                 and name = #{name,jdbcType=VARCHAR}

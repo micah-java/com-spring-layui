@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+    <!-- 搜索条件开始 -->
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>查询条件</legend>
+    </fieldset>
+    <form action="/query" method="post" class="layui-form" id="user_role_table_form" lay-filter="user_role_table_form">
+
+        <input type="hidden" name="page" id="page" value=""/>
+        <input type="hidden" name="limit" id="limit" value=""/>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" type="text" id="username" name="username" placeholder="请输入用户名"/>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">角色名</label>
+                <div class="layui-input-inline">
+                    <select name="roleId" lay-filter="roleId" id="roleId">
+                        <option value="">请选择</option>
+                        <option th:each="r:${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="user_role_table_query">查询</button>
+                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+            </div>
+        </div>
+    </form>
+    <!-- 搜索条件结束 -->
+    <!-- 数据表格开始 -->
+    <table class="layui-hide" id="user_role_table" lay-filter="user_role_table"></table>
+    <!--自定义toolBar-->
+    <div style="display: none;" id="user_role_tool_bar">
+        <!--按钮组-->
+        <div class="layui-btn-group">
+            <!--可以加layui-btn-sm属性控制按钮的大小-->
+            <button type="button" class="layui-btn" lay-event="create">创建</button>
+            <button type="button" class="layui-btn" lay-event="batch_delete">批量删除</button>
+        </div>
+    </div>
+    <!--自定义lineToolBar-->
+    <div style="display: none;" id="user_role_line_bar">
+        <!--可以加layui-btn-xs属性控制按钮的大小-->
+        <button type="button" class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>
+        <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</button>
+    </div>
+
+<!-- 弹出层开始 -->
+<div id="createPopups" style="display: none;">
+    <form class="layui-form" action="" lay-filter="create_popups_form" id="create_popups_form">
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-username">姓名</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="name" placeholder="请输入姓名"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-face-smile-fine">电话</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="telephone" placeholder="请输入电话"/>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-top: 50px;">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="create_table_submit">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="editPopups" style="display: none;">
+    <form class="layui-form" action="" lay-filter="edit_popups_form" id="edit_popups_form">
+
+        <input type="hidden" name="id" value=""/>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-username">姓名</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="name" placeholder="请输入姓名"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-icon layui-icon-face-smile-fine">电话</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" type="text" name="telephone" placeholder="请输入电话"/>
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-top: 50px;">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="edit_table_submit">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+    //引入layui模块
+    layui.use(['laypage', 'layer', 'table','jquery','form'], function() {
+        var layer = layui.layer //弹层
+            , table = layui.table //表格
+            , $ = layui.jquery
+            , form = layui.form
+        ;
+
+        //执行一个table实例
+        var tableIns = table.render({
+            elem: '#user_role_table'//渲染的目标对象
+            , id: 'user_role_table'//设定容器唯一id,从layui 2.2.0开始，从<table id="test"></table>中的id参数中获取。
+            , height: 420
+            , url: '/user/role/query' //数据接口
+            , method: "post"//默认get
+            , title: '用户角色表'//数据导出来的标题
+            , page: true //开启分页
+            , toolbar: '#user_role_tool_bar' //开启工具栏，默认default
+            , defaultToolbar: ['filter', 'print', 'exports']//过滤，打印，导出
+            , height: "full"
+            , cellMinWidth: 100  //设置列默认的最小宽度
+            , limit: 10
+            , done: function (res, curr, count) {}//数据渲染完的回调,可以借此做一些其它的操作
+            , totalRow: true //开启合计行
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'username', title: '用户名', align: "center"},
+                    {field: 'rolename', title: '角色名', align: "center"},
+                    {title: '操作', fixed: 'right', toolbar: "#user_role_line_bar", align: "center"}
+                ]
+            ]
+        });
+
+        //监听table头工具栏事件
+        table.on('toolbar(user_role_table)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data; //获取选中的数据
+            switch (obj.event) {
+                case 'create':
+                    userCreatePopups();
+                    break;
+                case 'batch_delete':
+                    if (data.length === 0) {
+                        layer.msg('请最少选择一行');
+                    } else {
+                        layer.confirm('真的删除行么', function(index){
+                            batchDeleteUser(data,index);
+                        });
+                    }
+                    break;
+            }
+        });
+
+        var userPopupsIndex;
+        function userCreatePopups(){
+            userPopupsIndex = layer.open({
+                type: 1,
+                title: '添加数据',
+                shadeClose: false,
+                shade: 0.01,
+                maxmin: true,
+                area: '500px',
+                fix: false,
+                content: $("#createPopups"),
+                success:function(layero,index){
+                    //清空表单数据
+                    $("#create_popups_form")[0].reset();
+                }
+            });
+        }
+
+        //保存数据
+        form.on('submit(create_table_submit)',function () {
+            //序列化表单数据
+            var params = $("#create_popups_form").serializeArray();
+            var array = {};
+            $.map(params,function (item,index) {
+                array[item['name']] = item['value'];
+            });
+            var data = JSON.stringify(array);
+            $.ajax({
+                url: "user/create",
+                type: "POST",
+                data: data,
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    layer.close(userPopupsIndex);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                },
+                error: function (data) {}
+            });
+            return false;
+        });
+
+        function batchDeleteUser(data,index){
+            var idArr = [];
+            debugger;
+            $.each(data,function (idx,item) {
+                idArr.push(item.id);
+            });
+            var obj = {"ids":idArr};
+            $.ajax({
+                url: "user/batch/delete",
+                data: obj,
+                type: "POST",
+                dataType: "json",
+                //contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (res) {
+                    //关闭弹出层
+                    layer.close(index);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                }
+            });
+        }
+
+
+        //监听行工具中的事件，即行中的按钮
+        table.on('tool(user_table)', function(obj){
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+
+            if(layEvent === 'edit'){ //编辑
+                editUser(data);//传数据
+            } else if(layEvent === 'delete'){ //删除
+                layer.confirm('真的删除行么', function(index){
+                    deleteUser(data,index);//传数据
+                });
+            } else if(layEvent == 'name_icon_copy'){
+                layer.alert("复制");
+            }
+        });
+
+        function editUser(data){
+            userPopupsIndex = layer.open({
+                type: 1,
+                title: '添加数据',
+                shadeClose: false,
+                shade: 0.01,
+                maxmin: true,
+                area: '500px',
+                fix: false,
+                content: $("#editPopups"),
+                success:function (layero, index) {
+                    //给表单赋值
+                    form.val("edit_popups_form",data);
+                }
+            });
+        }
+
+        //更新数据
+        form.on('submit(edit_table_submit)',function () {
+            //序列化表单数据
+            var params = $("#edit_popups_form").serializeArray();
+            var array = {};
+            $.map(params,function (item,index) {
+                array[item['name']] = item['value'];
+            });
+            var data = JSON.stringify(array);
+            $.ajax({
+                url: "user/edit",
+                type: "POST",
+                data: data,
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    layer.close(userPopupsIndex);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                },
+                error: function (data) {}
+            });
+            //阻止表单跳转，如果需要表单跳转，去掉这段即可。
+            return false;
+        });
+
+        //删除数据
+        function deleteUser(data,index){
+            $.ajax({
+                url: "user/del/" + data.id,
+                type: "PUT",
+                data: {},
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    //关闭弹出层
+                    layer.close(index);
+                    //刷新表单数据
+                    table.reload('user_table', {
+                        url: '/query',
+                        where: {}
+                    });
+                }
+            });
+        }
+
+        //查询表单提交
+        form.on('submit(user_role_table_query)',function () {
+            //注意，user_role_table取得是table容器的索引，即table实例中id
+            table.reload('user_role_table', {
+                url: '/user/role/query',
+                where: {
+                    username: $.trim($("#username").val()),
+                    roleId: $.trim($("#roleId").val())
+                }
+            });
+            //阻止表单跳转，如果需要表单跳转，去掉这段即可。
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

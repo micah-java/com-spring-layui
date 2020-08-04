@@ -1,5 +1,7 @@
 package com.spring.layer.entity;
 
+import java.util.List;
+
 public class User extends BaseRequest {
 
     private Integer id;
@@ -13,6 +15,8 @@ public class User extends BaseRequest {
     private String telephone;
     private String email;
     private String jod;
+
+    private List<Role> roles;
 
     public User() {}
 
@@ -111,5 +115,13 @@ public class User extends BaseRequest {
 
     public void setJod(String jod) {
         this.jod = jod;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }
