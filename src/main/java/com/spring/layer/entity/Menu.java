@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class Menu implements Serializable {
 
@@ -25,7 +26,13 @@ public class Menu implements Serializable {
 
     private List<TreeType> checkArr;
 
+    private Set<Integer> roleIds;
+
     public Menu() {
+    }
+
+    public Menu(Set<Integer> roleIds) {
+        this.roleIds = roleIds;
     }
 
     public Integer getId() {
@@ -134,5 +141,13 @@ public class Menu implements Serializable {
 
     public void setCheckArr(List<TreeType> checkArr) {
         this.checkArr = checkArr;
+    }
+
+    public Set<Integer> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(Set<Integer> roleIds) {
+        this.roleIds = roleIds;
     }
 }

@@ -27,4 +27,13 @@
             </if>
         </where>
     </select>
+    <insert id="create" parameterType="com.spring.layer.entity.UserRole">
+        insert into user_role (role_id,user_id) values (#{roleId}, #{userId})
+    </insert>
+    <update id="edit" parameterType="com.spring.layer.entity.UserRole">
+        update user_role set user_id=#{userId},role_id = #{roleId} where id=#{id}
+    </update>
+    <select id="queryUserRoleByUserId" parameterType="int" resultType="com.spring.layer.entity.UserRole">
+        select * from user_role where user_id = #{userId}
+    </select>
 </mapper>

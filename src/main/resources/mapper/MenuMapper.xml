@@ -35,4 +35,16 @@
                 ) t3 WHERE childId != 0
             );
     </delete>
+
+    <select id="queryMenuTreeByRoleId" resultType="com.spring.layer.entity.Menu">
+        select * from menu where id in(
+            SELECT menu_id menuId FROM role_menu
+            <where>
+                role_id in
+                <foreach item="item" index="index" collection="roleIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </where>
+        )
+    </select>
 </mapper>

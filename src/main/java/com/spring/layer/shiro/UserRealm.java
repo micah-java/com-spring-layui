@@ -26,7 +26,6 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
-
         Subject subject = SecurityUtils.getSubject();
         //该user就是认证方法中返回的SimpleAuthenticationInfo对象的第一个参数principal
         User user = (User)subject.getPrincipal();
@@ -45,9 +44,9 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 
-        User user = new User("admin");
-        user = userService.queryUser(user);
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
+        User user = new User(usernamePasswordToken.getUsername());
+        user = userService.queryUser(user);
         //1、验证用户名
         if(Objects.isNull(user)){
             //用户名不存在

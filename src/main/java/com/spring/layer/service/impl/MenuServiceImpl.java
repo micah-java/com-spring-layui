@@ -31,7 +31,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public List<Menu> queryMenuTree(Menu menu) {
-        List<Menu> menus = menuMapper.queryMenuList(menu);
+        List<Menu> menus = menuMapper.queryMenuTreeByRoleId(menu.getRoleIds());
         List<Menu> menuRootTree = menus.stream().filter(e -> e.getParentId() == -1).collect(Collectors.toList());
         for(Menu m : menuRootTree){
             List<Menu> children = bilidChildren(m.getId(), menus);

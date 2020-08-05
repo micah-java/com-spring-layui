@@ -23,4 +23,6 @@ public interface UserMapper {
     User queryUser(User user);
 
     int batchDelete(@Param("ids") List<Integer> ids);
+
+    User findUserByName(@Param("name") String name);
 }

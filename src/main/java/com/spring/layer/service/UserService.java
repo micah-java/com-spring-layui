@@ -7,6 +7,7 @@ import java.util.List;
 public interface UserService {
 
     public User findUserById(Integer id);
+    public User findUserByName(String name);
     public int edit(User user);
     public int create(User user);
     public int deleteUserById(Integer id);

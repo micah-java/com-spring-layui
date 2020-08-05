@@ -67,4 +67,8 @@
             </if>
         </where>
     </select>
+
+    <select id="findUserByName" parameterType="string" resultType="com.spring.layer.entity.User">
+		 SELECT * FROM User WHERE name = #{name}
+	</select>
 </mapper>

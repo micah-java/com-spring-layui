@@ -33,4 +33,19 @@ public class UserRoleServiceImpl implements UserRoleService {
     public int count(UserRole userRole) {
         return userRoleMapper.count(userRole);
     }
+
+    @Override
+    public int create(UserRole userRole) {
+        return userRoleMapper.create(userRole);
+    }
+
+    @Override
+    public int edit(UserRole userRole) {
+        return userRoleMapper.edit(userRole);
+    }
+
+    @Override
+    public List<UserRole> queryUserRoleByUserId(Integer userId) {
+        return userRoleMapper.queryUserRoleByUserId(userId);
+    }
 }
